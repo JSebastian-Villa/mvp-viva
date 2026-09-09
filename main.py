@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import psycopg2
@@ -21,13 +23,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Servir archivos estáticos del frontend (CSS, JS, etc.)
+app.mount("/static", StaticFiles(directory="src"), name="static")
+
+# Ruta principal que sirve directamente la aplicación visual (index.html)
 @app.get("/")
 def inicio():
-    return {
-        "mensaje": "API Mercado VIVA activa",
-        "docs": "/docs",
-        "productos": "/api/productos"
-    }
+    return FileResponse("src/index.html")
 
 # Conexión a la base de datos PostgreSQL alojada en Supabase
 def get_db_connection():
@@ -88,7 +90,7 @@ def crear_reserva(reserva: ReservaRequest):
         cur = conn.cursor()
         conn.autocommit = False
         
-        # Bloqueo optimista/pesimista con FOR UPDATE para prevenir condiciones de carrera
+        # Bloqueo con FOR UPDATE para prevenir condiciones de carrera
         cur.execute('''
             SELECT 
                 p.stock_total,
@@ -206,4 +208,3 @@ def cancelar_reserva(reserva_id: int):
     finally:
         cur.close()
         conn.close()
-
