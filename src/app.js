@@ -1,4 +1,4 @@
-const API_URL = "/api"; 
+const API_URL = "http://127.0.0.1:8000/api";
 
 async function cargarProductos() {
     try {
@@ -63,7 +63,8 @@ async function iniciarCompra(productoId) {
                 alert("Compra exitosa. El stock se ha descontado de la base de datos.");
             }
         } else {
-            alert("Compra cancelada. La reserva expirará en 5 minutos devolviendo el stock.");
+            await fetch(`${API_URL}/reservar/${dataReserva.reserva_id}`, { method: 'DELETE' });
+            alert("Compra cancelada. El stock ha sido liberado.");
         }
         cargarProductos();
     } catch (error) {
