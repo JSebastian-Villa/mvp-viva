@@ -63,8 +63,7 @@ async function iniciarCompra(productoId) {
                 alert("Compra exitosa. El stock se ha descontado de la base de datos.");
             }
         } else {
-            await fetch(`${API_URL}/reservar/${dataReserva.reserva_id}`, { method: 'DELETE' });
-            alert("Compra cancelada. El stock ha sido liberado.");
+            alert("Pago no confirmado. El stock queda reservado durante 5 minutos.");
         }
         cargarProductos();
     } catch (error) {
